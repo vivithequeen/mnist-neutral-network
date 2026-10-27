@@ -6,7 +6,7 @@ import numpy as np
 import csv
 import matplotlib.pyplot as plt
 
-layers = 1
+layers = 2
 characters = 10
 dimentions = 28*28
 
@@ -39,10 +39,15 @@ def array_from_image(filename):
 def get_activation_value(prev, weights, bias):
     weighted_sum = 0
     for n in range(dimentions):
-        #print(weighted_sum)
         weighted_sum+=float(prev[n]) * float(weights[n])
-    print(weighted_sum)
-    return sigmoid(weighted_sum)
+    return sigmoid(weighted_sum + float(bias[0]))
+
+def get_activation_value_layer(prev, weights_and_bias, layer):
+    layer_activation_value = []
+    print(prev)
+    for n in weights_and_bias[dimentions*layer:dimentions*(layer+1)]:
+        layer_activation_value.append(get_activation_value(prev, n[:dimentions], n[:-1]))
+    return layer_activation_value
 
 def read_weights_and_bias():
     with open('weights_and_bias.csv', mode='r', encoding='utf-8') as file:
@@ -51,23 +56,31 @@ def read_weights_and_bias():
         for line in lines:
             l = line.strip().split(",")
             
-            master_array+=l
-    return master_array[dimentions+1:]
+            master_array.append(l)
+    master_array.pop(0)
+    
+    return master_array
 
-def visualize_what_on_earth_is_happaning(image_array, weights_and_bias):
+def visualize_what_on_earth_is_happaning(image_array, weights_and_bias_layer_1,weights_and_bias_layer_2 ):
     image_2d = image_array.reshape((28,28))
-    weights_2d = np.array(weights_and_bias[:dimentions], dtype=float).reshape((28,28))
+    weights_2d_1 = np.array(weights_and_bias_layer_1[:dimentions], dtype=float).reshape((28,28))
+    weights_2d_2 = np.array(weights_and_bias_layer_2[:dimentions], dtype=float).reshape((28,28))
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-    
-    im1 = ax1.imshow(weights_2d, cmap="bwr")
-    ax1.set_title("Weights")
+    fig, (ax3, ax1, ax2) = plt.subplots(1, 3, figsize=(10, 5))
+
+    im3 = ax3.imshow(image_2d, cmap="gray")
+    ax3.set_title("Input Image")
+    fig.colorbar(im3, ax=ax3)
+
+    im1 = ax1.imshow(weights_2d_1, cmap="bwr")
+    ax1.set_title("Weights, layer 1")
     fig.colorbar(im1, ax=ax1)
-    
-    im2 = ax2.imshow(image_2d, cmap="gray")
-    ax2.set_title("Input Image")
+
+    im2 = ax2.imshow(weights_2d_2, cmap="bwr")
+    ax2.set_title("Weights, layer 2")
     fig.colorbar(im2, ax=ax2)
-    
+
+
     plt.tight_layout()
     plt.show()
 
@@ -77,8 +90,7 @@ weights_and_bias = read_weights_and_bias()
 
 
 image_array = array_from_image("mnist\\train\\0.png")
+a = get_activation_value_layer(image_array,weights_and_bias, 0)
+b = get_activation_value_layer(a, weights_and_bias, 1)
 
-print(get_activation_value(image_array, weights_and_bias[:dimentions], weights_and_bias[dimentions:dimentions+1]))
-
-
-visualize_what_on_earth_is_happaning(image_array, weights_and_bias)
+visualize_what_on_earth_is_happaning(image_array,a,b)
