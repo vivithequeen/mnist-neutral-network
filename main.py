@@ -6,7 +6,8 @@ import numpy as np
 import csv
 import matplotlib.pyplot as plt
 
-layers = 2
+layers = 1
+hidden_layer_size = 16
 characters = 10
 dimentions = 28*28
 
@@ -20,12 +21,13 @@ def setup_weights_and_bias():
         for i in range(dimentions):
             f.write(f"weight_{i},")
         f.write("bias")
-        
-        for i in range(dimentions * layers):
-            f.write("\n")
-            for j in range(dimentions):
-                f.write(f"{((random.random() * 2) -1) * 1 },") # weight
-            f.write(f"{((random.random() * 2) -1) * 1 }") # bias
+        a = [dimentions, hidden_layer_size, hidden_layer_size, characters]
+        for i in [1,2,3]:
+            for j in range(a[i]):
+                f.write("\n")
+                for k in range(a[i-1]):
+                    f.write(f"{((random.random() * 2) -1) * 1 },") # weight
+                f.write(f"{((random.random() * 2) -1) * 1 }") # bias
 
 def array_from_image(filename):
     img = Image.open(filename)
@@ -38,14 +40,13 @@ def array_from_image(filename):
 
 def get_activation_value(prev, weights, bias):
     weighted_sum = 0
-    for n in range(dimentions):
+    for n in range(len(prev)):
         weighted_sum+=float(prev[n]) * float(weights[n])
     return sigmoid(weighted_sum + float(bias[0]))
 
-def get_activation_value_layer(prev, weights_and_bias, layer):
+def get_activation_value_layer(prev, weights_and_bias, layer, layer_size):
     layer_activation_value = []
-    print(prev)
-    for n in weights_and_bias[dimentions*layer:dimentions*(layer+1)]:
+    for n in weights_and_bias[(layer_size)*layer:(layer_size)*(layer+1)]:
         layer_activation_value.append(get_activation_value(prev, n[:dimentions], n[:-1]))
     return layer_activation_value
 
@@ -84,13 +85,48 @@ def visualize_what_on_earth_is_happaning(image_array, weights_and_bias_layer_1,w
     plt.tight_layout()
     plt.show()
 
-setup_weights_and_bias()     
+def run_neural_network(weights_and_bias, path):
+    image_array = array_from_image(f"mnist\\test\\{path}")
+    a = get_activation_value_layer(image_array,weights_and_bias, 0, hidden_layer_size)
+    b = get_activation_value_layer(a,weights_and_bias, 1, hidden_layer_size)
+    c = get_activation_value_layer(b, weights_and_bias, 2, characters)
+    print(c)
+    print(c.index(max(c)))
+    return c.index(max(c)) # gussed character
 
-weights_and_bias = read_weights_and_bias()
+
+def read_test_labels():
+    
+    with open('mnist/test_labels.csv',mode='r', encoding='utf-8') as file:
+        master_array = []
+        lines = file.readlines()
+        for line in lines:
+            l = line.strip().split(",")
+            
+            master_array.append(l)
+    master_array.pop(0)
+    return master_array
+
+def evaluate_network():
+    test_labels = read_test_labels()
+    weights_and_bias = read_weights_and_bias()
+
+    temp_test_labels = test_labels[:100]
+
+    num_correct = 0
+    for n in temp_test_labels:
+        print(n)
+        evaluated = run_neural_network(weights_and_bias, n[0])
+        #print(evaluated, n[1],"\n")
+        if(evaluated == int(n[1])):
+            num_correct+=1
+    print(f"% correct:{(num_correct / len(temp_test_labels)) * 100}")
+
+setup_weights_and_bias()
+
+evaluate_network()
 
 
-image_array = array_from_image("mnist\\train\\0.png")
-a = get_activation_value_layer(image_array,weights_and_bias, 0)
-b = get_activation_value_layer(a, weights_and_bias, 1)
+#b = get_activation_value_layer(a, weights_and_bias, 1)
 
-visualize_what_on_earth_is_happaning(image_array,a,b)
+#visualize_what_on_earth_is_happaning(image_array,a,b)
