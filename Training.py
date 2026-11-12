@@ -40,7 +40,7 @@ class Training:
         train_labels = self.read_csv("mnist\\train_labels.csv")
         count = 0
         costSum = 0
-        for n in train_labels[:9000]:
+        for n in train_labels[:200]:
             c = self.neuralNetwork.run_neural_network(weights_and_bias, f"train\\{n[0]}")
             
             cost = self.getCost(c, int(n[1]))
