@@ -3,9 +3,7 @@ import os
 import random
 from PIL import Image
 import numpy as np
-import csv
 import matplotlib.pyplot as plt
-import NeuralNetwork
 import Training
 
 
