@@ -5,8 +5,12 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import Training
+import time
 
-
+# layers = 2
+# hidden_layer_size = 32
+# characters = 10
+# dimentions = 28*28
 
 # def setup_weights_and_bias():
 #     with open("weights_and_bias.csv", "w", encoding="latin-1") as f:
@@ -93,28 +97,29 @@ def read_test_labels():
     master_array.pop(0)
     return master_array
 
-# def evaluate_network():
-#     test_labels = read_test_labels()
-#     weights_and_bias = read_weights_and_bias()
+def evaluate_network(neuralNetwork):
+    test_labels = read_test_labels()
+    weights_and_bias = read_weights_and_bias()
 
-#     temp_test_labels = test_labels[:1000]
+    temp_test_labels = test_labels[:1000]
 
-#     num_correct = 0
+    num_correct = 0
 
-#     all_eval = []
-#     all_correct = []
+    all_eval = []
+    all_correct = []
 
-#     for n in temp_test_labels:
-#         #print(n)
-#         c = run_neural_network(weights_and_bias, n[0])
-#         evaluated = c.index(max(c))
-#         #print(evaluated, n[1],"\n")
-#         all_eval.append(evaluated)
-#         all_correct.append(int(n[1]))
-#         if(evaluated == int(n[1])):
-#             num_correct+=1
-#     print(f"% correct:{(num_correct / len(temp_test_labels)) * 100}")
-#     return all_eval, all_correct, (num_correct / len(temp_test_labels)) * 100
+    for n in temp_test_labels:
+        #print(n)
+        c = neuralNetwork.run_neural_network(weights_and_bias, n[0])
+        evaluated = c.index(max(c))
+        #print(evaluated, n[1],"\n")
+        all_eval.append(evaluated)
+        all_correct.append(int(n[1]))
+        if(evaluated == int(n[1])):
+            num_correct+=1
+    print(f"% correct:{(num_correct / len(temp_test_labels)) * 100}")
+    return all_eval, all_correct, (num_correct / len(temp_test_labels)) * 100
+
 
 #setup_weights_and_bias()
 
@@ -131,7 +136,7 @@ def read_test_labels():
 # print(c)
 # visualize_what_on_earth_is_happaning(image_array,c)
 def read_weights_and_bias():
-    with open('weights_and_bias.csv', mode='r', encoding='utf-8') as file:
+    with open('weights_and_bias_new.csv', mode='r', encoding='utf-8') as file:
         master_array = []
         lines = file.readlines()
         for line in lines:
@@ -145,4 +150,15 @@ def read_weights_and_bias():
 training = Training.Training()
 
 
-print(training.getAverageCost())
+start_time = time.perf_counter()
+
+##stuff goes here
+
+training.createCostFunction()
+
+#evaluate_network(training.neuralNetwork)
+
+## ends here
+end_time = time.perf_counter()
+
+print(f"Exection time:{end_time-start_time} seconds")
