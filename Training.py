@@ -2,7 +2,7 @@ import NeuralNetwork
 import random
 class Training:
     neuralNetwork = NeuralNetwork.NeuralNetwork()
-        
+
 
 
 
@@ -18,13 +18,13 @@ class Training:
                 master_array.append(l)
         master_array.pop(0)
         return master_array
-    
 
-        
+
+
     def getCost(self, network_output, intended_number):
 
         num_array =  [0] * len(network_output)
-        
+
 
         num_array[intended_number] = 1
 
@@ -35,14 +35,14 @@ class Training:
         return cost
 
     def getAverageCost(self, weights_and_bias):
-       
 
-        train_labels = self.read_csv("mnist\\train_labels.csv")
+
+        train_labels = self.read_csv("mnist//train_labels.csv")
         count = 0
         costSum = 0
-        for n in train_labels[:20]:
-            c = self.neuralNetwork.run_neural_network(weights_and_bias, f"train\\{n[0]}")
-            
+        for n in train_labels[:1000]:
+            c = self.neuralNetwork.run_neural_network(weights_and_bias, f"train//{n[0]}")
+
             cost = self.getCost(c, int(n[1]))
             count+=1
             costSum+=cost
@@ -73,7 +73,7 @@ class Training:
         best_cost = self.getAverageCost(best_weights)
         print(f"Initial Average Cost: {best_cost}")
 
-        steps = 100
+        steps = 20
         step_size = 0.05
 
         for i in range(steps):
@@ -96,14 +96,3 @@ class Training:
 
         self.write_weights_and_bias(best_weights)
         print(f"Final Best Cost: {best_cost}")
-
-        
-
-            
-
-
-
-
-
-
-

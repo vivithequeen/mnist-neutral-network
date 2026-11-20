@@ -31,7 +31,7 @@ import time
 
 
 # def visualize_what_on_earth_is_happaning(image_array, values):
-  
+
 
 #     image_2d = image_array.reshape((28, 28))
 
@@ -42,7 +42,7 @@ import time
 
 #     im3 = ax3.imshow(image_2d, cmap="gray")
 #     ax3.set_title("Input Image")
-#     ax3.axis("off")  
+#     ax3.axis("off")
 
 #     im1 = ax1.imshow(weights_2d_1, cmap="viridis", aspect='auto')
 #     ax1.set_title(f"Weights Heatmap {values.index(max(values))}")
@@ -86,13 +86,13 @@ def visualize_guesses(x,y, percent_correct):
 
 
 def read_test_labels():
-    
+
     with open('mnist/test_labels.csv',mode='r', encoding='utf-8') as file:
         master_array = []
         lines = file.readlines()
         for line in lines:
             l = line.strip().split(",")
-            
+
             master_array.append(l)
     master_array.pop(0)
     return master_array
@@ -110,7 +110,7 @@ def evaluate_network(neuralNetwork):
 
     for n in temp_test_labels:
         #print(n)
-        c = neuralNetwork.run_neural_network(weights_and_bias, n[0])
+        c = neuralNetwork.run_neural_network(weights_and_bias, f"test//{n[0]}")
         evaluated = c.index(max(c))
         #print(evaluated, n[1],"\n")
         all_eval.append(evaluated)
@@ -128,24 +128,24 @@ def evaluate_network(neuralNetwork):
 #visualize_guesses(x,y, percent_correct)
 
 #b = get_activation_value_layer(a, weights_and_bias, 1)
-# 
+#
 # num = random.randrange(0, 1000)
 # c = run_neural_network(weights_and_bias, f"{num}.png")
-# image_array = array_from_image(f"mnist\\test\\{num}.png")
+# image_array = array_from_image(f"mnist//test//{num}.png")
 
 # print(c)
 # visualize_what_on_earth_is_happaning(image_array,c)
 def read_weights_and_bias():
-    with open('weights_and_bias_new.csv', mode='r', encoding='utf-8') as file:
+    with open('weights_and_bias.csv', mode='r', encoding='utf-8') as file:
         master_array = []
         lines = file.readlines()
         for line in lines:
             l = line.strip().split(",")
-            
+
             master_array.append(l)
     master_array.pop(0)
     return master_array
-        
+
 
 training = Training.Training()
 
@@ -154,9 +154,9 @@ start_time = time.perf_counter()
 
 ##stuff goes here
 
-training.createCostFunction()
+#training.createCostFunction()
 
-#evaluate_network(training.neuralNetwork)
+evaluate_network(training.neuralNetwork)
 
 ## ends here
 end_time = time.perf_counter()
